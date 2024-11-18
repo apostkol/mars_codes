@@ -1,20 +1,11 @@
-import matplotlib
-from matplotlib import pyplot as plt
-from ..generic.Rot import cart_to_sph_vf, sph_to_cart_vf
-import matplotlib.patches as patches
+from ..generic.cart_to_sph_vf import cart_to_sph_vf
+from ..generic.sph_to_cart_vf import sph_to_cart_vf
 import os
-import pandas as pd
 import numpy as np
-from .cell import Cell as Cell
-import plotly
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
-from . import grid_cell_geometry as gcm
-import pickle
-import glob
-from .vector_field_operations import curl as curl
-from .vector_field_operations import div as div
-from .vector_field_operations import sigma_gradient as sigma_gradient
+from .cell import Cell
+from .curl import curl
+from .div import div 
+from .sigma_gradient import sigma_gradient
 import re
 
 class Grid:
@@ -479,32 +470,3 @@ class Grid:
                         
                     else:
                         print("Grid error")
-            
-def load_grid(grid_dict = None, load_from_file = False, file_path = None, data = None):
-    
-    if load_from_file:
-            
-        if os.path.exists(file_path):
-            
-            with open(file_path, 'rb') as f:
-                
-                grid_dict = pickle.load(f)
-                data = grid_dict["data"]
-                grid_name = f'dr{grid_dict["dr"]}_dth{grid_dict["dth_deg"]}_dphi{grid_dict["dphi_deg"]}'  
-        else:
-
-            print(f'File {file_path} not found.')
-                
-    else:
-                
-        grid_name = f'dr{grid_dict["dr"]}_dth{grid_dict["dth_deg"]}_dphi{grid_dict["dphi_deg"]}'
-        
-    return Grid(grid_dict, load_from_file, file_path, data, grid_name)
-
-def save_grid(grid):
-
-    with open(f"grid_{grid.grid_name}__{re.sub('.csv','', re.sub(r'.*/' ,'', grid.data))}.pickle", "wb") as f:
-        grid.grid_to_dict()
-        pickle.dump(grid.save_dict, f)
-
-    

@@ -1,4 +1,5 @@
-from .generic.Rot import cart_to_sph_vf, sph_to_cart_vf
+from .generic.cart_to_sph_vf import cart_to_sph_vf
+from .generic.sph_to_cart_vf import sph_to_cart_vf
 from .grid import spherical_grid
 import pandas as pd
 import numpy as np
@@ -8,16 +9,10 @@ import scipy
 import os
 import spiceypy as spice
 import astropy.convolution
-# %matplotlib widget
-# sys.setrecursionlimit(2000000000)
-# import json
 
 def load_pck_kernel(pck_file):
     
     return spice.furnsh(pck_file)
-    
-# load_pck_kernel(pck_file)
-# mars_radius = spice.bodvcd(499, "RADII", 3)[1][0]
 
 def smoothing_3d(B, kernel, mode="nearest"):
         

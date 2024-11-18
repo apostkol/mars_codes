@@ -1,18 +1,7 @@
 import numpy as np
-import matplotlib as mpl
-from matplotlib import pyplot as plt
-import mpl_toolkits.mplot3d as Axes3D
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-# import plotly.express as px
-# import plotly.figure_factory as ff
 from scipy.spatial import Delaunay
 from . import grid_cell_geometry as gcm
-# import mars_currents as mc
-# import mars_currents.grid.vector_field_operations
-# from mars_currents.grid.vector_field_operations import curl as curl
-# from mars_currents.grid.vector_field_operations import div as div
-
 import warnings
 
 
@@ -21,17 +10,17 @@ class Cell:
     def __init__(self, dr, dth, dphi, i, j, k, r, th, phi):
         
         self.dr = dr
-        self.dth = dth #np.deg2rad(dth)
-        self.dphi = dphi #np.deg2rad(dphi)
+        self.dth = dth 
+        self.dphi = dphi 
         self.r_c = r[i]
-        self.th_c = th[j] #np.deg2rad(th[j])
-        self.phi_c = phi[k] #np.deg2rad(phi[k])
+        self.th_c = th[j] 
+        self.phi_c = phi[k] 
         self.r_idx = i
         self.th_idx = j
         self.phi_idx = k
         self.r = r
-        self.th = th #np.deg2rad(th)
-        self.phi = phi #np.deg2rad(phi)
+        self.th = th 
+        self.phi = phi
         self.neighbours = {'r':{-1:{None}, +1:{None}}, 
                           'th':{-1:{None}, +1:{None}}, 
                          'phi':{-1:{None}, +1:{None}}}
@@ -69,7 +58,6 @@ class Cell:
     def initialize(self):
         
         self.B_mse_sph = [np.array([np.nan]), np.array([np.nan]), np.array([np.nan])]
-       # self.P_mse_sph = [np.array([np.nan]), np.array([np.nan]), np.array([np.nan])]
 
     def average(self, A):
         warnings.filterwarnings(action='ignore', message='Mean of empty slice')
@@ -91,20 +79,6 @@ class Cell:
         self.sigma_Br = self.sigma(self.B_mse_sph[0])
         self.sigma_Bth = self.sigma(self.B_mse_sph[1])
         self.sigma_Bphi = self.sigma(self.B_mse_sph[2])
-        
-    # def current_density(self, radius):
-    #     mu0 = 1.25663706212e-6
-        
-    #     J = 1/(radius*1e3) * 1/(mu0) * np.array(curl(self, self.neighbours, field = 'B'))
-    #     self.Jr, self.Jth, self.Jphi = J[0], J[1], J[2]
-    #     #return [curl_r, curl_th, curl_phi] 
-    
-    # def current_error(self):
-        
-    #     divf = np.linalg.norm(div(self, self.neighbours, field = "B"))
-    #     curlf = np.linalg.norm(curl(self, self.neighbours, field = "B"))
-        
-    #     self.__setattr__(f"divB_curlB", divf/curlf) 
     
     def sph_to_cart(self, r, th, phi):
         
@@ -184,12 +158,11 @@ class Cell:
         th_idx_neighb = 2*[self.th_idx] + [self.th_idx-1, self.th_idx+1] + 2*[self.th_idx]
         phi_idx_neighb = 4*[self.phi_idx] + [self.phi_idx-1, self.phi_idx+1]
         
-        if self.phi_idx == 0:# and self.phi_c == np.deg2rad(-180):
+        if self.phi_idx == 0:
             phi_idx_neighb[-2] = -1
-        elif self.phi_idx + 1 == len(self.phi):# and self.phi_c == 360 - self.dphi:
+        elif self.phi_idx + 1 == len(self.phi):
             phi_idx_neighb[-1] = 0
-        # elif (self.phi_idx == 0 and self.phi_c != 0) or (self.phi_idx + 1 == len(self.phi) and self.phi_c != 360 - self.dphi):
-        #     raise ValueError("phi coordinate does not go from 0 to 360 deg.")
+
         
         if self.r_idx == 0 or self.r_idx + 1 == len(self.r):
             r_idx_neighb.pop(np.where(self.r_idx == 0, 0, 1))
