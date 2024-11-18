@@ -14,12 +14,6 @@ def Rot(th, axis = 'x'):
                  [np.sin(th),  np.cos(th), 0],
                  [0,           0,          1]]
     return rot_m
-
-def cart_to_sph_transf(th, phi):
-
-    return np.matrix([[np.sin(th)*np.cos(phi), np.sin(th)*np.sin(phi),  np.cos(th)],
-            [np.cos(th)*np.cos(phi), np.cos(th)*np.sin(phi), -np.sin(th)],
-            [-np.sin(phi),           np.cos(phi),                     0]])
     
     # return np.matrix([[-np.cos(th)*np.cos(phi), np.cos(th)*np.sin(phi), np.sin(th)],
     #                   [-np.sin(th)*np.cos(phi), -np.sin(th)*np.sin(phi), np.cos(th)],
@@ -28,27 +22,27 @@ def cart_to_sph_transf(th, phi):
 #def sph_to_cart_transf():
     
     
-def sph_to_cart_vf(A, th, phi):
+# def sph_to_cart_vf(A, th, phi):
     
-    #th = np.deg2rad(th); phi = np.deg2rad(phi)
-    if isinstance(th, list) and isinstance(phi, list):
+#     #th = np.deg2rad(th); phi = np.deg2rad(phi)
+#     if isinstance(th, list) and isinstance(phi, list):
         
-        points_rot = [cart_to_sph_transf(theta, phii).T for theta, phii in zip(th, phi)]
-    #print(points_rot[0])
-        rotated_to_cart = [np.dot(rot_m, point) for rot_m, point in zip(points_rot, A)]
-    else:
+#         points_rot = [cart_to_sph_transf(theta, phii).T for theta, phii in zip(th, phi)]
+#     #print(points_rot[0])
+#         rotated_to_cart = [np.dot(rot_m, point) for rot_m, point in zip(points_rot, A)]
+#     else:
         
-        rot_m = cart_to_sph_transf(th, phi).T
-        rotated_to_cart = np.dot(rot_m, A)
+#         rot_m = cart_to_sph_transf(th, phi).T
+#         rotated_to_cart = np.dot(rot_m, A)
         
-    return rotated_to_cart
+#     return rotated_to_cart
 
-def cart_to_sph_vf(A, th, phi):
+# def cart_to_sph_vf(A, th, phi):
     
-    #th = np.deg2rad(th); phi = np.deg2rad(phi)
+#     #th = np.deg2rad(th); phi = np.deg2rad(phi)
     
-    points_rot = [cart_to_sph_transf(theta, phi) for theta, phi in zip(th, phi)]
-    rotated_to_sph = [np.dot(rot_m, point) for rot_m, point in zip(points_rot, A)]
+#     points_rot = [cart_to_sph_transf(theta, phi) for theta, phi in zip(th, phi)]
+#     rotated_to_sph = [np.dot(rot_m, point) for rot_m, point in zip(points_rot, A)]
     
-    return rotated_to_sph
+#     return rotated_to_sph
 
