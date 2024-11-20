@@ -1,5 +1,5 @@
 [project]
-name = "mars_codes"
+name = "mars_currents"
 version = "1.0.0"
 authors = [
   { name="Apostolos Kolokotronis", email="apostolos.kolokotronis@irf.se" },
