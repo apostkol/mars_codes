@@ -1,5 +1,5 @@
 [project]
-name = "mars_currents"
+name = "mars_codes"
 version = "1.0.0"
 authors = [
   { name="Apostolos Kolokotronis", email="apostolos.kolokotronis@irf.se" },
@@ -13,16 +13,6 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-[project.urls]
-Homepage = "https://github.com/apostkol/mars-electrodynamic-currents"
-
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel==0.38.1",
-]
-build-backend = "setuptools.build_meta"
-
 dependencies = [
     "astropy>=6.1.3",
     "cdflib>=1.3.1",
@@ -34,6 +24,16 @@ dependencies = [
     "spiceypy>=6.0.0",
     "xarray>=2024.10.0"
 ]
+
+[project.urls]
+Homepage = "https://github.com/apostkol/mars-electrodynamic-currents"
+
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel==0.38.1",
+]
+build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
 git = [
@@ -60,9 +60,6 @@ docs = [
     "sphinx-gallery>=0.13.0",
     "sphinxcontrib-apidoc>=0.3.0",
 ]
-
-[project.urls]
-
 
 [tool.setuptools]
 include-package-data = true
