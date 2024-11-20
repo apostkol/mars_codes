@@ -1,12 +1,13 @@
-from ..generic.cart_to_sph_vf import cart_to_sph_vf
-from ..generic.sph_to_cart_vf import sph_to_cart_vf
-import os
+# from ..generic.cart_to_sph_vf import cart_to_sph_vf
+# from ..generic.sph_to_cart_vf import sph_to_cart_vf
+# import os
 import numpy as np
 from .cell import Cell
 from .curl import curl
 from .div import div 
 from .sigma_gradient import sigma_gradient
 import re
+import pickle 
 
 class Grid:
 
@@ -470,3 +471,9 @@ class Grid:
                         
                     else:
                         print("Grid error")
+
+    def save_grid(self):
+
+        with open(f"grid_{self.grid_name}__{re.sub('.csv','', re.sub(r'.*/' ,'', self.data))}.pickle", "wb") as f:
+            self.grid_to_dict()
+            pickle.dump(self.save_dict, f)

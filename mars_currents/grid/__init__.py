@@ -5,7 +5,7 @@ from .cell import Cell
 from .curl import curl
 from .div import div
 from .load_grid import load_grid
-from .save_grid import save_grids
+from .save_grid import save_grid
 from .sigma_gradient import sigma_gradient
 from .spherical_grid import Grid
 

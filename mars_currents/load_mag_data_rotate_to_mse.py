@@ -1,5 +1,5 @@
 # import .mars_currents as mc
-from .mag_files.load_mag_data import load_b
+from .mag_files import load_mag_data
 from scipy.ndimage import median_filter
 from .generic.Rot import Rot
 from .generic.bow_shock import bow_shock
@@ -28,7 +28,7 @@ def load_data(data_dict, aberation = None):
     mars_radius = spice.bodvcd(499, 'RADII', 3)[1][0]
 
 
-    output = load_b(start, end, frame, sampl, folder_path, kernel_path, re_sampling = freq_sampl)
+    output = load_mag_data(start, end, frame, sampl, folder_path, kernel_path, re_sampling = freq_sampl)
     pre_df = {'time':output['time'], 'Bx':output['b'][0], 'By':output['b'][1], 'Bz':output['b'][2], 
               'X':output['position'][0]/mars_radius, 'Y':output['position'][1]/mars_radius, 'Z':output['position'][2]/mars_radius}
 

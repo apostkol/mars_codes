@@ -1,12 +1,12 @@
 from .generic.cart_to_sph_vf import cart_to_sph_vf
 from .generic.sph_to_cart_vf import sph_to_cart_vf
-from .grid import spherical_grid
+from .grid import load_grid
 import pandas as pd
 import numpy as np
-import pickle
-import sys
+# import pickle
+# import sys
 import scipy
-import os
+# import os
 import spiceypy as spice
 import astropy.convolution
 
@@ -28,18 +28,18 @@ def smoothing_3d(B, kernel, mode="nearest"):
         )
     return B_smoothed
     
-def load_grid(data_file_name=None, load_from_file=False, file_path=None, dr=None, dth=None, dphi=None, r_lim=None, th_lim=None, phi_lim=None):
+def init_grid(data_file_name=None, load_from_file=False, file_path=None, dr=None, dth=None, dphi=None, r_lim=None, th_lim=None, phi_lim=None):
 
     if data_file_name is not None and load_from_file==False:
 
         grid_dict = dict(dr = dr, dth_deg = dth, dphi_deg = dphi, r_lim = r_lim, th_lim_deg = th_lim
                  , phi_lim_deg = phi_lim)
     
-        grid = spherical_grid.load_grid(grid_dict, load_from_file = load_from_file, data = data_file_name)
+        grid = load_grid(grid_dict, load_from_file = load_from_file, data = data_file_name)
         
     elif file_path is not None and load_from_file:
 
-        grid = spherical_grid.load_grid(load_from_file = load_from_file, 
+        grid = load_grid(load_from_file = load_from_file, 
                                 file_path = file_path)
 
     return grid
