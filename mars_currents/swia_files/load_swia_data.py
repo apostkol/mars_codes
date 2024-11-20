@@ -1,38 +1,12 @@
-from mars_currents.swia_files import swia_file_names as sfn 
+from .swia_files_list import swia_files_list 
 import glob
-from mars_currents.spice_codes.load_spice_kernels import load_spice_kernels
-import cdflib
+from ..spice_codes.load_spice_kernels import load_spice_kernels
 from cdflib.xarray import cdf_to_xarray
 import xarray as xr
-import warnings 
-def create_paths(start, end, kind, data_path, verbose=True):
+import warnings
+from .create_paths import create_paths
 
-    """Returns a list of paths for the swia files. """
-
-    paths = []
-    not_exist = []
-    for name in sfn.swia_list_files(start, end, kind):
-                
-        name_st = 'mvn_swi_l2_'
-        year = name.replace(f'{name_st}{kind}_', '')[:4]
-        month = name.replace(f'{name_st}{kind}_{year}', '')[:2]
-        day = name.replace(f'{name_st}{kind}_{year}{month}', '')[:2]  
-        file_path = f'{data_path}/{year}/{month}/{name}.cdf'
-        file_in_path = glob.glob(file_path)
-        
-        if not bool(file_in_path):
-            not_exist.append(file_path)            
-        elif len(file_in_path)>1:
-            paths.append(file_in_path[-1])
-        else:
-            paths.append(file_in_path[0])
-            
-    if verbose:
-        print('Paths of files: \n', paths)
-        
-    return [paths, not_exist]
-
-def load_data(start, end, kind, data_path, kernel_path, resampling = None, verbose=True, thin_n = None):
+def load_swia_data(start, end, kind, data_path, kernel_path, resampling = None, verbose=True, thin_n = None):
 
     load_spice_kernels(kernel_path)
     paths, not_exist = create_paths(start, end, kind, data_path, False)

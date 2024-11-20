@@ -1,6 +1,6 @@
-from mars_currents.time_operations import time_op as tm
+from ..time_operations import time_op as tm
 
-def swia_file_name(date_time, kind):
+def _swia_file_name(date_time, kind):
 
     """Outputs the swia file name, given the date, time, type.
     Inputs:
@@ -20,7 +20,7 @@ def swia_file_name(date_time, kind):
     
     return name
 
-def swia_list_files(start, end, kind):
+def swia_files_list(start, end, kind):
     t = tm.time(start)
     finish = tm.time(end)
     list_file_names = []
@@ -29,7 +29,7 @@ def swia_list_files(start, end, kind):
 
         date_time = tm.year_doy2date_str(t.year, t.doy)
         date_str = f'{date_time}'
-        list_file_names.append(swia_file_name(date_str, kind))
+        list_file_names.append(_swia_file_name(date_str, kind))
         
         if t.doy >= int(tm.yearisLeap(t.year))+365: 
             
