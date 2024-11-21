@@ -1,4 +1,0 @@
-build
-dist
-examples
-mars_currents
