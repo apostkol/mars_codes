@@ -356,14 +356,16 @@ def rotated_to_mse(
     df_orbits=None,
 ):
 
-    df, remove = clock_angles(
-        data_dict=data_dict,
-        aberation=aberation,
-        smooth_factor=smooth_factor,
-        bow_shock_pars=bow_shock_pars,
-        df=df,
-        df_orbits=df_orbits,
-    )
+    if 'clock_angle' not in df.columns:
+
+        df, remove = clock_angles(
+            data_dict=data_dict,
+            aberation=aberation,
+            smooth_factor=smooth_factor,
+            bow_shock_pars=bow_shock_pars,
+            df=df,
+            df_orbits=df_orbits,
+        )
 
     df['Bx_mse'], df['By_mse'], df['Bz_mse'], df['X_mse'], df['Y_mse'], df['Z_mse'] = (
         rotation_to_mse(df, remove)
