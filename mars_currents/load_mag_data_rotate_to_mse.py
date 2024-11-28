@@ -354,6 +354,7 @@ def rotated_to_mse(
     out=True,
     df=None,
     df_orbits=None,
+    remove=None,
 ):
 
     if 'clock_angle' not in df.columns:
