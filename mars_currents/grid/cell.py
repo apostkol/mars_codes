@@ -388,7 +388,7 @@ class Cell:
                     line=go.scatter3d.Line(color=color, width=line_width),
                 ),
             )
-
+        return sides
         if color_faces:
 
             for face in faces:
