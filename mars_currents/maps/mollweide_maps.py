@@ -48,7 +48,7 @@ def mollweide_maps(
         fig, ax = plt.subplots(
             nrows=1,
             ncols=len(maps),
-            figsize=(3 * len(maps), 4),
+            figsize=(5 * len(maps), 5),
             subplot_kw={'projection': 'mollweide'},
         )
 
@@ -142,8 +142,8 @@ def mollweide_maps(
 
         plt.annotate(
             r'$\vec{B}_{\rm IMF}$',
-            xy=(0.428, 0.831),
-            xytext=(0.39, 0.831),
+            xy=(0.428, 0.7),
+            xytext=(0.39, 0.7),
             xycoords='figure fraction',
             arrowprops=dict(facecolor='red', width=3),
             horizontalalignment='center',
