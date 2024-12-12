@@ -90,12 +90,12 @@ def mollweide_maps(
 
             ax[i].grid(color='black', linestyle='--', alpha=0.5)
             gridlines = ax[i].xaxis.get_gridlines()
-            gridlines[1].set_linestyle('-')
-            gridlines[1].set_color('orange')
-            gridlines[1].set_linewidth(3)
-            gridlines[5].set_linestyle('-')
-            gridlines[5].set_color('orange')
-            gridlines[5].set_linewidth(3)
+            gridlines[1].set_linestyle('--')
+            gridlines[1].set_color('black')
+            gridlines[1].set_linewidth(3.5)
+            gridlines[5].set_linestyle('--')
+            gridlines[5].set_color('black')
+            gridlines[5].set_linewidth(3.5)
 
         cb_maps = fig.colorbar(
             mappable=cmesh,
@@ -127,11 +127,11 @@ def mollweide_maps(
             ax[3].grid(color='black', linestyle='--', alpha=0.5)
             gridlines = ax[3].xaxis.get_gridlines()
             gridlines[1].set_linestyle('--')
-            gridlines[1].set_color('purple')
-            gridlines[1].set_linewidth(3)
+            gridlines[1].set_color('black')
+            gridlines[1].set_linewidth(3.5)
             gridlines[5].set_linestyle('--')
-            gridlines[5].set_color('purple')
-            gridlines[5].set_linewidth(3)
+            gridlines[5].set_color('black')
+            gridlines[5].set_linewidth(3.5)
 
             cb_map4 = fig.colorbar(
                 mappable=map4, ax=ax[3], orientation='horizontal', shrink=1.2,
