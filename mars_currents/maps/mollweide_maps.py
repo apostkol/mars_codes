@@ -48,7 +48,7 @@ def mollweide_maps(
         fig, ax = plt.subplots(
             nrows=1,
             ncols=len(maps),
-            figsize=(6.5 * len(maps), 5),
+            figsize=(3 * len(maps), 4),
             subplot_kw={'projection': 'mollweide'},
         )
 
