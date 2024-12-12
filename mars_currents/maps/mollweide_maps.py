@@ -142,8 +142,8 @@ def mollweide_maps(
 
         plt.annotate(
             r'$\vec{B}_{\rm IMF}$',
-            xy=(0.328, 0.831),
-            xytext=(0.29, 0.831),
+            xy=(0.428, 0.831),
+            xytext=(0.39, 0.831),
             xycoords='figure fraction',
             arrowprops=dict(facecolor='red', width=3),
             horizontalalignment='center',
