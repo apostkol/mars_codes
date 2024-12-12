@@ -388,7 +388,12 @@ class Cell:
                     line=go.scatter3d.Line(color=color, width=line_width),
                 ),
             )
-        return sides
+        for side in sides:
+
+            if any(np.isnan(coord).any() for coord in side):
+
+                return
+
         if color_faces:
 
             for face in faces:
@@ -405,6 +410,7 @@ class Cell:
                 ).flatten()
 
                 points2D = np.vstack([face_x, face_y]).T
+
                 tri = Delaunay(points2D, qhull_options='QJ Pp')
 
                 surface = gcm.plotly_trisurf(
