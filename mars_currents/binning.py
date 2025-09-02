@@ -251,23 +251,30 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
         Br_ext_start = grid.Br[-1, :, :]
         Br_ext_end = grid.Br[0, :, :]
 
-        grid.Br_ext = np.concatenate((Br_ext_start, grid.Br), axis=0)
-        grid.Br_ext = np.concatenate((grid.Br_ext, Br_ext_end), axis=0)
-        grid.Br_ext = grid.Br_ext[np.newaxis, :, :]
+        grid.Br_ext = np.concatenate((Br_ext_start[np.newaxis, :, :], grid.Br), axis=0)
+        grid.Br_ext = np.concatenate(
+            (grid.Br_ext, Br_ext_end[np.newaxis, :, :]), axis=0,
+        )
 
         Bth_ext_start = grid.Bth[-1, :, :]
         Bth_ext_end = grid.Bth[0, :, :]
 
-        grid.Bth_ext = np.concatenate((Bth_ext_start, grid.Bth), axis=0)
-        grid.Bth_ext = np.concatenate((grid.Bth_ext, Bth_ext_end), axis=0)
-        grid.Bth_ext = grid.Bth_ext[np.newaxis, :, :]
+        grid.Bth_ext = np.concatenate(
+            (Bth_ext_start[np.newaxis, :, :], grid.Bth), axis=0,
+        )
+        grid.Bth_ext = np.concatenate(
+            (grid.Bth_ext, Bth_ext_end[np.newaxis, :, :]), axis=0,
+        )
 
         Bphi_ext_start = grid.Bphi[-1, :, :]
         Bphi_ext_end = grid.Bphi[0, :, :]
 
-        grid.Bphi_ext = np.concatenate((Bphi_ext_start, grid.Bphi), axis=0)
-        grid.Bphi_ext = np.concatenate((grid.Bphi_ext, Bphi_ext_end), axis=0)
-        grid.Bphi_ext = grid.Bphi_ext[np.newaxis, :, :]
+        grid.Bphi_ext = np.concatenate(
+            (Bphi_ext_start[np.newaxis, :, :], grid.Bphi), axis=0,
+        )
+        grid.Bphi_ext = np.concatenate(
+            (grid.Bphi_ext, Bphi_ext_end[np.newaxis, :, :]), axis=0,
+        )
 
         grid.Br_sm = astropy.convolution.convolve(
             grid.Br_ext,
