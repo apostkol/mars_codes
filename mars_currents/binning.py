@@ -248,9 +248,26 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
         """Function that performs smoothing, convoluting the kernel above with the component 3D images. On the image edges the "nearest"
         neighbours are used. NaNs are propagating when used on the convolution. After the filtering, the new NaNs are replace with
        their old, unsmoothed values."""
+        Br_ext_start = grid.Br[-1, :, :]
+        Br_ext_end = grid.Br[0, :, :]
+
+        grid.Br_ext = np.concatenate((Br_ext_start, grid.Br), axis=0)
+        grid.Br_ext = np.concatenate((grid.Br_ext, Br_ext_end), axis=0)
+
+        Bth_ext_start = grid.Bth[-1, :, :]
+        Bth_ext_end = grid.Bth[0, :, :]
+
+        grid.Bth_ext = np.concatenate((Bth_ext_start, grid.Bth), axis=0)
+        grid.Bth_ext = np.concatenate((grid.Bth_ext, Bth_ext_end), axis=0)
+
+        Bphi_ext_start = grid.Bphi[-1, :, :]
+        Bphi_ext_end = grid.Bphi[0, :, :]
+
+        grid.Bphi_ext = np.concatenate((Bphi_ext_start, grid.Bphi), axis=0)
+        grid.Bphi_ext = np.concatenate((grid.Bphi_ext, Bphi_ext_end), axis=0)
 
         grid.Br_sm = astropy.convolution.convolve(
-            grid.Br,
+            grid.Br_ext,
             kernel,
             boundary='extend',
             nan_treatment='interpolate',
@@ -258,7 +275,7 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
             preserve_nan=True,
         )
         grid.Bth_sm = astropy.convolution.convolve(
-            grid.Bth,
+            grid.Bth_ext,
             kernel,
             boundary='extend',
             nan_treatment='interpolate',
@@ -266,7 +283,7 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
             preserve_nan=True,
         )
         grid.Bphi_sm = astropy.convolution.convolve(
-            grid.Bphi,
+            grid.Bphi_ext,
             kernel,
             boundary='extend',
             nan_treatment='interpolate',
