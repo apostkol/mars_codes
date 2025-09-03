@@ -284,6 +284,8 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
             normalize_kernel=True,
             preserve_nan=True,
         )
+        grid.Br_sm = grid.Br_sm[1:-1, :, :]
+
         grid.Bth_sm = astropy.convolution.convolve(
             grid.Bth_ext,
             kernel,
@@ -292,6 +294,8 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
             normalize_kernel=True,
             preserve_nan=True,
         )
+        grid.Bth_sm = grid.Bth_sm[1:-1, :, :]
+
         grid.Bphi_sm = astropy.convolution.convolve(
             grid.Bphi_ext,
             kernel,
@@ -300,6 +304,7 @@ def binning(grid, data_file_name=None):  # , pck_file=None):
             normalize_kernel=True,
             preserve_nan=True,
         )
+        grid.Bphi_sm = grid.Bphi_sm[1:-1, :, :]
 
         for i in range(grid.Br_sm.shape[0]):
             for j in range(grid.Br_sm.shape[1]):
