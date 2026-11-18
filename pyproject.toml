@@ -7,6 +7,8 @@ authors = [
 ]
 maintainers = [
   { name="David Andrews", email="david.andrews@irf.se" },
+  { name="Apostolos Kolokotronis", email="apostolos.kolokotronis@irf.se" },
+
 ]
 description = "Package to map the induced magnetic field and current densities around Mars, using MAVEN data."
 readme = "README.md"
