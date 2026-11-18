@@ -52,6 +52,18 @@ For paper-specific workflows, see [paper/README.md](paper/README.md).
 For field-aligned currents, tests, and notebook setup, see the
 [appendix below](#appendix).
 
+## Credits and attribution
+
+This project was originally developed by Apostolos Kolokotronis, with later
+development by David Andrews including substantial refactoring, additional
+capabilities, tests, and documentation. The codebase is collaborative, and no
+attempt is made to assign every file or line to an individual contributor.
+
+Later development was heavily assisted by OpenAI Codex—affectionately known
+during this work as *Silicon haunted by monsters from the Id*—used interactively
+under human direction and review. Codex is acknowledged as a development tool,
+not as a legal author or copyright holder.
+
 ## Appendix
 
 ### Field-aligned currents

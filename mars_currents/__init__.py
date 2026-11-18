@@ -8,9 +8,9 @@ them directly when they are needed rather than as a side effect of
 ``import mars_currents``.
 """
 
-__author__ = "Apostolos Kolokotronis"
-__email__ = "apostolos.kolokotronis@irf.se"
-__copyright__ = "Copyright 2020-2024"
+__author__ = "Apostolos Kolokotronis and David Andrews"
+__email__ = "apostolos.kolokotronis@irf.se; david.andrews@irf.se"
+__copyright__ = "Copyright 2020-2026 mars_currents contributors"
 __license__ = "MIT"
 __version__ = "1.0.0"
 __status__ = "Prototype"
