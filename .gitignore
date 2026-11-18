@@ -1,3 +1,16 @@
+# Project-specific data
+data/
+.agent.md
+.instructions.md
+.prompt.md
+.codex/
+SKILL.md
+*.png
+*.pdf
+*.lock
+*.pickle
+examples/*.ipynb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

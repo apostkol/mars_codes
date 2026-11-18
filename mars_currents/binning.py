@@ -1,33 +1,33 @@
 from __future__ import annotations
 
-import astropy.convolution
+import os.path
+
 import numpy as np
-import pandas as pd
 import scipy
 import spiceypy as spice
 
-from .generic.cart_to_sph_vf import cart_to_sph_vf
-from .generic.sph_to_cart_vf import sph_to_cart_vf
 from .grid import load_grid
+
 # import pickle
 # import sys
 # import os
 
 
 def load_pck_kernel(pck_file):
+    if os.path.isfile(pck_file):
+        return spice.furnsh(str(pck_file))
+    else:
+        raise FileNotFoundError(f"File not found: {pck_file}")
 
-    return spice.furnsh(pck_file)
 
-
-def smoothing_3d(B, kernel, mode='nearest'):
+def smoothing_3d(B, kernel, mode="nearest"):
 
     B_smoothed = scipy.ndimage.convolve(B, kernel, mode=mode)
     nans_positions = np.where(np.isnan(B_smoothed))
 
-    # B_smoothed[nans_positions] = B[nans_positions] if np.isnan(B[nans_positions]) == False else B_smoothed[nans_positions]
     if nans_positions[0].size > 0:
         B_smoothed[nans_positions] = np.where(
-            np.isnan(B[nans_positions]) == False,
+            np.isfinite(B[nans_positions]),
             B[nans_positions],
             B_smoothed[nans_positions],
         )
@@ -46,8 +46,7 @@ def init_grid(
     phi_lim=None,
 ):
 
-    if data_file_name is not None and load_from_file == False:
-
+    if data_file_name is not None and not load_from_file:
         grid_dict = dict(
             dr=dr,
             dth_deg=dth,
@@ -60,270 +59,28 @@ def init_grid(
         grid = load_grid(grid_dict, load_from_file=load_from_file, data=data_file_name)
 
     elif file_path is not None and load_from_file:
-
         grid = load_grid(load_from_file=load_from_file, file_path=file_path)
 
     return grid
 
 
 def binning(grid, data_file_name=None):  # , pck_file=None):
+    """[Deprecated] Backward-compatible wrapper. Use grid.bin_data() instead.
 
-    r = grid.r
-    th = grid.th
-    phi = grid.phi
+    Bins magnetic field data into the grid and populates cell values.
+    This function is maintained for backward compatibility; new code should use
+    grid.bin_data(data_file_name) directly.
 
-    if data_file_name is None:
+    Parameters
+    ----------
+    grid : Grid
+        The grid to populate with binned data.
+    data_file_name : str, optional
+        Path to the CSV data file.
 
-        print('No data file given \n')
-
-        return
-
-    elif data_file_name is not None:
-
-        """Read the mag_mse file into a pandas dataframe"""
-
-        df = pd.read_csv(data_file_name)
-        df = df.drop(df[np.isnan(df['R_mse'])].index)
-        df = df[
-            [
-                'Bx_mse',
-                'By_mse',
-                'Bz_mse',
-                'X_mse',
-                'Y_mse',
-                'Z_mse',
-                'R_mse',
-                'th_mse',
-                'phi_mse',
-            ]
-        ]
-
-        r_binned = np.digitize(df['R_mse'].values, grid.r_bins, right=True)
-        th_binned = np.digitize(df['th_mse'].values, grid.th_bins, right=True)
-        phi_binned = np.digitize(df['phi_mse'].values, grid.phi_bins, right=True)
-
-        B_mse_cart = [
-            [Bx, By, Bz] for Bx, By, Bz in zip(df['Bx_mse'], df['By_mse'], df['Bz_mse'])
-        ]
-        B_mse_sph = cart_to_sph_vf(
-            B_mse_cart, df['th_mse'].values, df['phi_mse'].values,
-        )
-
-        df['Br_mse'] = [B_sph.A[0][0] for B_sph in B_mse_sph]
-        df['Bth_mse'] = [B_sph.A[0][1] for B_sph in B_mse_sph]
-        df['Bphi_mse'] = [B_sph.A[0][2] for B_sph in B_mse_sph]
-
-        df['r_bin'] = r_binned
-        df['th_bin'] = th_binned
-        df['phi_bin'] = phi_binned
-
-        df = df.drop(
-            columns=['Bx_mse', 'By_mse', 'Bz_mse', 'X_mse', 'Y_mse', 'Z_mse'], axis=1,
-        )
-
-        """Binning, by comparing the r,th,phi bins of each data point with the ones from the cells. Then average to get B_mse_mean in spherical
-       cooridnates, and get cartesian cooridnates and magentic field components of the cells, to plot the 3D cone plot. Might also be used
-       to make slice plots."""
-
-        grid.X_cells = []
-        grid.Y_cells = []
-        grid.Z_cells = []
-        grid.Bx_cells = []
-        grid.By_cells = []
-        grid.Bz_cells = []
-
-        for cell in grid.cells:
-
-            cell.initialize()
-            df_data_in_bin = df.loc[
-                (df['r_bin'] == cell.r_bin)
-                & (df['th_bin'] == cell.th_bin)
-                & (df['phi_bin'] == cell.phi_bin),
-                ['Br_mse', 'Bth_mse', 'Bphi_mse'],
-            ]  # 'R_mse', 'th_mse', 'phi_mse',
-
-            if not df_data_in_bin.empty:
-
-                cell.B_mse_sph[0] = df_data_in_bin['Br_mse'].values
-                cell.B_mse_sph[1] = df_data_in_bin['Bth_mse'].values
-                cell.B_mse_sph[2] = df_data_in_bin['Bphi_mse'].values
-
-                del df_data_in_bin
-
-                cell.n_measurements = len(cell.B_mse_sph[0])
-            else:
-                cell.n_measurements = np.nan
-
-            cell.B_average()
-            cell.X, cell.Y, cell.Z = cell.sph_to_cart(cell.r_c, cell.th_c, cell.phi_c)
-            cell.Bx, cell.By, cell.Bz = sph_to_cart_vf(
-                cell.B_mse_mean, cell.th_c, cell.phi_c,
-            ).A.tolist()[0]
-
-            grid.X_cells.append(cell.X)
-            grid.Y_cells.append(cell.Y)
-            grid.Z_cells.append(cell.Z)
-
-            grid.Bx_cells.append(cell.Bx)
-            grid.By_cells.append(cell.By)
-            grid.Bz_cells.append(cell.Bz)
-
-        del df
-
-        grid.Br = np.empty((len(phi), len(th), len(r)))
-        grid.Br[:] = np.nan
-        grid.Bth = np.empty((len(phi), len(th), len(r)))
-        grid.Bth[:] = np.nan
-        grid.Bphi = np.empty((len(phi), len(th), len(r)))
-        grid.Bphi[:] = np.nan
-        grid.sigma_Br = np.empty((len(phi), len(th), len(r)))
-        grid.sigma_Br[:] = np.nan
-        grid.sigma_Bth = np.empty((len(phi), len(th), len(r)))
-        grid.sigma_Bth[:] = np.nan
-        grid.sigma_Bphi = np.empty((len(phi), len(th), len(r)))
-        grid.sigma_Bphi[:] = np.nan
-
-        grid.th_2d = np.empty((len(phi), len(th), len(r)))
-        grid.th_2d[:] = np.nan
-        grid.phi_2d = np.empty((len(phi), len(th), len(r)))
-        grid.phi_2d[:] = np.nan
-        grid.measurement_counts = np.empty((len(phi), len(th), len(r)))
-
-        for i in range(grid.Br.shape[0]):
-            for j in range(grid.Br.shape[1]):
-                for k in range(grid.Br.shape[2]):
-                    matching_cell = []
-                    for cell in grid.cells:
-                        if (
-                            cell.r_bin == k + 1
-                            and cell.th_bin == j + 1
-                            and cell.phi_bin == i + 1
-                        ):
-                            matching_cell.append(cell)
-                            break
-
-                    if not bool(matching_cell):
-
-                        grid.Br[i, j, k] = np.nan
-                        grid.Bth[i, j, k] = np.nan
-                        grid.Bphi[i, j, k] = np.nan
-                        grid.sigma_Br[i, j, k] = np.nan
-                        grid.sigma_Bth[i, j, k] = np.nan
-                        grid.sigma_Bphi[i, j, k] = np.nan
-                        grid.th_2d[i, j, k] = th[j]
-                        grid.phi_2d[i, j, k] = phi[i]
-                        grid.measurement_counts[i, j, k] = np.nan
-
-                    elif len(matching_cell) == 1:
-
-                        grid.Br[i, j, k] = matching_cell[0].B_mse_mean[0]
-                        grid.Bth[i, j, k] = matching_cell[0].B_mse_mean[1]
-                        grid.Bphi[i, j, k] = matching_cell[0].B_mse_mean[2]
-                        grid.sigma_Br[i, j, k] = matching_cell[0].sigma_Br
-                        grid.sigma_Bth[i, j, k] = matching_cell[0].sigma_Bth
-                        grid.sigma_Bphi[i, j, k] = matching_cell[0].sigma_Bphi
-                        grid.th_2d[i, j, k] = matching_cell[0].th_c
-                        grid.phi_2d[i, j, k] = matching_cell[0].phi_c
-                        grid.measurement_counts[i, j, k] = matching_cell[
-                            0
-                        ].n_measurements
-
-                    else:
-                        print('Grid error')
-
-        """Kernel for use as an average filter, across the image. Takes into account central cell and the 6 cells that share faces with it."""
-
-        kernel = (
-            1
-            / 7
-            * np.array(
-                [
-                    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-                    [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-                    [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
-                ],
-            )
-        )
-
-        """Function that performs smoothing, convoluting the kernel above with the component 3D images. On the image edges the "nearest"
-        neighbours are used. NaNs are propagating when used on the convolution. After the filtering, the new NaNs are replace with
-       their old, unsmoothed values."""
-        Br_ext_start = grid.Br[-1, :, :]
-        Br_ext_end = grid.Br[0, :, :]
-
-        grid.Br_ext = np.concatenate((Br_ext_start[np.newaxis, :, :], grid.Br), axis=0)
-        grid.Br_ext = np.concatenate(
-            (grid.Br_ext, Br_ext_end[np.newaxis, :, :]), axis=0,
-        )
-
-        Bth_ext_start = grid.Bth[-1, :, :]
-        Bth_ext_end = grid.Bth[0, :, :]
-
-        grid.Bth_ext = np.concatenate(
-            (Bth_ext_start[np.newaxis, :, :], grid.Bth), axis=0,
-        )
-        grid.Bth_ext = np.concatenate(
-            (grid.Bth_ext, Bth_ext_end[np.newaxis, :, :]), axis=0,
-        )
-
-        Bphi_ext_start = grid.Bphi[-1, :, :]
-        Bphi_ext_end = grid.Bphi[0, :, :]
-
-        grid.Bphi_ext = np.concatenate(
-            (Bphi_ext_start[np.newaxis, :, :], grid.Bphi), axis=0,
-        )
-        grid.Bphi_ext = np.concatenate(
-            (grid.Bphi_ext, Bphi_ext_end[np.newaxis, :, :]), axis=0,
-        )
-
-        grid.Br_sm = astropy.convolution.convolve(
-            grid.Br_ext,
-            kernel,
-            boundary='extend',
-            nan_treatment='interpolate',
-            normalize_kernel=True,
-            preserve_nan=True,
-        )
-        grid.Br_sm = grid.Br_sm[1:-1, :, :]
-
-        grid.Bth_sm = astropy.convolution.convolve(
-            grid.Bth_ext,
-            kernel,
-            boundary='extend',
-            nan_treatment='interpolate',
-            normalize_kernel=True,
-            preserve_nan=True,
-        )
-        grid.Bth_sm = grid.Bth_sm[1:-1, :, :]
-
-        grid.Bphi_sm = astropy.convolution.convolve(
-            grid.Bphi_ext,
-            kernel,
-            boundary='extend',
-            nan_treatment='interpolate',
-            normalize_kernel=True,
-            preserve_nan=True,
-        )
-        grid.Bphi_sm = grid.Bphi_sm[1:-1, :, :]
-
-        for i in range(grid.Br_sm.shape[0]):
-            for j in range(grid.Br_sm.shape[1]):
-                for k in range(grid.Br_sm.shape[2]):
-                    count = 0
-                    for cell in grid.cells:
-
-                        if (
-                            cell.r_bin == k + 1
-                            and cell.th_bin == j + 1
-                            and cell.phi_bin == i + 1
-                        ):
-                            count += 1
-                            cell.Br = grid.Br_sm[i, j, k]
-                            cell.Bth = grid.Bth_sm[i, j, k]
-                            cell.Bphi = grid.Bphi_sm[i, j, k]
-
-                            break
-
-                    if count == 0 or count > 1:
-                        print('Grid error')
-    return grid
+    Returns
+    -------
+    grid : Grid
+        The populated grid instance.
+    """
+    return grid.bin_data(data_file_name)
